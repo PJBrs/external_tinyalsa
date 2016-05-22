@@ -221,6 +221,7 @@ void play_sample(FILE *file, unsigned int card, unsigned int device, unsigned in
     int num_read;
     int remaining_data;
 
+    memset(&config, 0, sizeof(config));
     config.channels = channels;
     config.rate = rate;
     config.period_size = period_size;

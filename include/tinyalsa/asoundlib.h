@@ -93,17 +93,20 @@ struct pcm_config {
     unsigned int period_count;
     enum pcm_format format;
 
-    /* Values to use for the ALSA start, stop and silence thresholds.  Setting
-     * any one of these values to 0 will cause the default tinyalsa values to be
-     * used instead.  Tinyalsa defaults are as follows.
+    /* Values to use for the ALSA start, stop and silence thresholds, and
+     * silence size.  Setting any one of these values to 0 will cause the
+     * default tinyalsa values to be used instead.
+     * Tinyalsa defaults are as follows.
      *
      * start_threshold   : period_count * period_size
      * stop_threshold    : period_count * period_size
      * silence_threshold : 0
+     * silence_size      : 0
      */
     unsigned int start_threshold;
     unsigned int stop_threshold;
     unsigned int silence_threshold;
+    unsigned int silence_size;
 
     /* Minimum number of frames available before pcm_mmap_write() will actually
      * write into the kernel buffer. Only used if the stream is opened in mmap mode
@@ -232,6 +235,7 @@ int pcm_mmap_read(struct pcm *pcm, void *data, unsigned int count);
 int pcm_mmap_begin(struct pcm *pcm, void **areas, unsigned int *offset,
                    unsigned int *frames);
 int pcm_mmap_commit(struct pcm *pcm, unsigned int offset, unsigned int frames);
+int pcm_mmap_avail(struct pcm *pcm);
 
 /* Prepare the PCM substream to be triggerable */
 int pcm_prepare(struct pcm *pcm);
@@ -244,6 +248,7 @@ int pcm_ioctl(struct pcm *pcm, int request, ...);
 
 /* Interrupt driven API */
 int pcm_wait(struct pcm *pcm, int timeout);
+int pcm_get_poll_fd(struct pcm *pcm);
 
 /* Change avail_min after the stream has been opened with no need to stop the stream.
  * Only accepted if opened with PCM_MMAP and PCM_NOIRQ flags
